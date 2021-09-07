@@ -10,7 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.coolreece.gamechoice.data.Game
 import com.coolreece.gamechoice.data.Player
 import com.coolreece.gamechoice.ui.game.GameViewModel
 import com.coolreece.gamechoice.ui.player.PlayerViewModel
@@ -18,47 +22,47 @@ import com.coolreece.gamechoice.ui.player.PlayerViewModel
 @ExperimentalMaterialApi
 @Composable
 fun GameSelectionCard(
-    viewModel: GameViewModel,
+    gameViewModel: GameViewModel = viewModel(),
     navController: NavController,
     player: Player,
-    showDoneIcon: MutableState<Boolean>,
     playerViewModel: PlayerViewModel
 ) {
+    val games = gameViewModel.gameData.observeAsState()
+    games.value.let {
+        Column {
+            Log.i("Player", "Teams: ${player.teams}")
+            TopAppBar(
+                title = { Text("GameChoice") },
+                actions = {
 
+                    IconButton(onClick = {
+                        if (player.teams.size > 10) {
+                            player.week = "week 1"
+                            playerViewModel.addPlayer(player)
+                            navController.navigate("playerresultlist")
+                        }
+                    }) {
+                        Row {
 
-    Column {
-        Log.i("Player", "Teams: ${player.teams}")
-        TopAppBar(
-            title = { Text("GameChoice") },
-            actions = {
-
-                IconButton(onClick = {
-                    if(player.teams.size > 10) {
-                        player.week = "week 1"
-                        playerViewModel.addPlayer(player)
-                        navController.navigate("playerresultlist")
+                            Text(text = "Done")
+                            Icon(Icons.Filled.Done, contentDescription = "Completed")
+                        }
                     }
-                }) {
-                    Row {
 
-                        Text(text = "Done")
-                        Icon(Icons.Filled.Done, contentDescription = "Completed")
-                    }
                 }
-
-            }
-        )
-        PickCardList(viewModel, player)
+            )
+            PickCardList(it!!, player)
+        }
     }
 }
 
 @ExperimentalMaterialApi
 @Composable
 fun PickCardList(
-    viewModel: GameViewModel,
+    games: List<Game>,
     player: Player) {
     LazyColumn() {
-        items(viewModel.gameData.value) { game ->
+        items(games) { game ->
             PickCard(
                 game = game,
                 player = player)

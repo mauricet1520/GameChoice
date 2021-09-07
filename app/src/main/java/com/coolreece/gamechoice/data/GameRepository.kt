@@ -18,7 +18,7 @@ import kotlin.math.log
 
 class GameRepository(val app: Application) {
 
-     val gameData = mutableStateOf<List<Game>>(emptyList())
+     val gameData = MutableLiveData(listOf<Game>())
 
     fun getGames() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -26,14 +26,6 @@ class GameRepository(val app: Application) {
                 callService()
             }
             Log.i("Service", "Calling getGames in Repository")
-
-//            withTimeout(1300L) {
-////                repeat(1000) { i ->
-////                    println("I'm sleeping $i ...")
-////                    delay(500L)
-////                }
-//
-//            }
         }
     }
 
@@ -46,13 +38,12 @@ class GameRepository(val app: Application) {
 
             val retrofit = buildRetrofit(gson)
 
-
             val service = retrofit.create(GameService::class.java)
             val gameList = service.getAppointment("week 1")
             Log.i("Service", "Calling Service ${gameList.isSuccessful} Body: ${gameList.body()}")
             Log.i("Service", "Code ${gameList.code()}")
             Log.i("Service", "Error $gameList")
-            gameData.value = gameList.body() ?: emptyList()
+            gameData.postValue(gameList.body() ?: emptyList())
         }else {
             Log.i("Service", "Error No Network")
         }
@@ -73,7 +64,7 @@ class GameRepository(val app: Application) {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create()) //important
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create(gson!!))
             .build()
 
     }

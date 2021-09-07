@@ -104,7 +104,6 @@ fun PlayerResultCard(player: Player) {
 fun PlayerResultList(playerViewModel: PlayerViewModel = viewModel(), navController: NavController) {
     playerViewModel.getPlayers()
 
-    CircularProgressIndicator()
 
     val players = playerViewModel.playerData.observeAsState()
     Column {
@@ -132,10 +131,14 @@ fun PlayerResultList(playerViewModel: PlayerViewModel = viewModel(), navControll
             }
         )
 
-        LazyColumn {
-            items(players.value!!) { player ->
-                PlayerResultCard(player)
+        if(players.value!!.isNotEmpty()) {
+            LazyColumn {
+                items(players.value!!) { player ->
+                    PlayerResultCard(player)
+                }
             }
+        }else {
+            CircularProgressIndicator()
         }
     }
 }
