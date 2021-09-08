@@ -11,6 +11,7 @@ class PlayerViewModel(app: Application): AndroidViewModel(app)   {
     val playerRepository = PlayerRepository(app)
 
      val playerData: LiveData<List<Player>> = playerRepository.playerData
+     val onePlayerData: LiveData<Player> = playerRepository.onePlayerData
 
 
     fun getPlayers() {
@@ -20,6 +21,10 @@ class PlayerViewModel(app: Application): AndroidViewModel(app)   {
 
     fun addPlayer(player: Player) {
         playerRepository.addPlayer(player)
+    }
+
+    fun getOnePlayer(name: String) {
+        playerRepository.getPlayer(name)
     }
 
 }

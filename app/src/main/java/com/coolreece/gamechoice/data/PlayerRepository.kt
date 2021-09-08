@@ -24,6 +24,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class PlayerRepository(val app: Application) {
 
     val playerData = MutableLiveData(listOf<Player>())
+    val onePlayerData = MutableLiveData<Player>()
 
     fun getPlayers() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -31,6 +32,15 @@ class PlayerRepository(val app: Application) {
                 callService()
             }
             Log.i("Service", "Calling getPlayers in Repository")
+        }
+    }
+
+    fun getPlayer(name: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            withTimeout(130000L) {
+                callGetPlayerService(name)
+            }
+            Log.i("Service", "Calling getPlayer with name $name in Repository")
         }
     }
 
@@ -67,6 +77,27 @@ class PlayerRepository(val app: Application) {
     }
 
     @WorkerThread
+    suspend fun callGetPlayerService(name: String) {
+        if (networkAvailable()) {
+            val gson = GsonBuilder()
+                .setLenient()
+                .create()
+
+            val retrofit = buildRetrofit(gson)
+
+            val service = retrofit.create(PlayerService::class.java)
+            val playerServiceResponse = service.getPlayer("week 1", name)
+            onePlayerData.postValue(playerServiceResponse.body())
+            Log.i("Service", "Calling Service ${playerServiceResponse.isSuccessful} " +
+                    "Body: ${playerServiceResponse.body()}")
+            Log.i("Service", "Code ${playerServiceResponse.code()}")
+        }else {
+            Log.i("Service", "Error No Network")
+        }
+
+    }
+
+    @WorkerThread
     suspend fun callPlayerService(player: Player) {
         if (networkAvailable()) {
             val gson = GsonBuilder()
@@ -78,14 +109,9 @@ class PlayerRepository(val app: Application) {
             val service = retrofit.create(PlayerService::class.java)
             val players = service.addPlayer(player)
 
-//            val playerList: MutableList<Player> = playerData.value as MutableList<Player>
-//            playerList.add(player)
-
-//            playerData.value = playerList
-
             Log.i("Service", "Calling Service ${players.isSuccessful} Body: ${players.body()}")
             Log.i("Service", "Code ${players.code()}")
-            Log.i("Service", "Error $players")
+            Log.i("Service", "Players: $players")
         }else {
             Log.i("Service", "Error No Network")
         }

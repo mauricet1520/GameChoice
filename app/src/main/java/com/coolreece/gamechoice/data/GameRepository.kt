@@ -39,7 +39,7 @@ class GameRepository(val app: Application) {
             val retrofit = buildRetrofit(gson)
 
             val service = retrofit.create(GameService::class.java)
-            val gameList = service.getAppointment("week 1")
+            val gameList = service.getGames("week 1")
             Log.i("Service", "Calling Service ${gameList.isSuccessful} Body: ${gameList.body()}")
             Log.i("Service", "Code ${gameList.code()}")
             Log.i("Service", "Error $gameList")

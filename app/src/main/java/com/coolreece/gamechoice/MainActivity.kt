@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = "playerresultlist"
                 ) {
                     composable("simpleoutlinedtextfieldsample") {
-                        SimpleOutlinedTextFieldSample(navController, player)
+                        SimpleOutlinedTextFieldSample(navController, player, playerViewModel)
                     }
                     composable("gameselectioncard") {
                         GameSelectionCard(

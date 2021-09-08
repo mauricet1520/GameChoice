@@ -7,5 +7,5 @@ import retrofit2.http.Query
 
 interface GameService {
     @GET("/games/{week}")
-    suspend fun getAppointment(@Path("week") week: String): Response<List<Game>>
+    suspend fun getGames(@Path("week") week: String): Response<List<Game>>
 }

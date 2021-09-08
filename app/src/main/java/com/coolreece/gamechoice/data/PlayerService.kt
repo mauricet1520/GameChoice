@@ -10,6 +10,10 @@ interface PlayerService {
     @GET("/players/{week}")
     suspend fun getPlayers(@Path("week") week: String): Response<List<Player>>
 
+    @GET("/players/{week}/{name}")
+    suspend fun getPlayer(@Path("week") week: String,
+    @Path("name") name: String): Response<Player>
+
     @POST("/players")
     suspend fun addPlayer(@Body player: Player): Response<String>
 }

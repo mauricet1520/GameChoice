@@ -36,7 +36,7 @@ fun GameSelectionCard(
                 actions = {
 
                     IconButton(onClick = {
-                        if (player.teams.size > 10) {
+                        if (player.teams.size > 15) {
                             navController.navigate("pointcomposable")
                         }
                     }) {
