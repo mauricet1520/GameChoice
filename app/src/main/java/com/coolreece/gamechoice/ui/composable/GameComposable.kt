@@ -5,13 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.coolreece.gamechoice.data.Game
@@ -24,9 +25,8 @@ import com.coolreece.gamechoice.ui.player.PlayerViewModel
 fun GameSelectionCard(
     gameViewModel: GameViewModel = viewModel(),
     navController: NavController,
-    player: Player,
-    playerViewModel: PlayerViewModel
-) {
+    player: Player) {
+
     val games = gameViewModel.gameData.observeAsState()
     games.value.let {
         Column {
@@ -37,9 +37,7 @@ fun GameSelectionCard(
 
                     IconButton(onClick = {
                         if (player.teams.size > 10) {
-                            player.week = "week 1"
-                            playerViewModel.addPlayer(player)
-                            navController.navigate("playerresultlist")
+                            navController.navigate("pointcomposable")
                         }
                     }) {
                         Row {
@@ -61,6 +59,7 @@ fun GameSelectionCard(
 fun PickCardList(
     games: List<Game>,
     player: Player) {
+
     LazyColumn() {
         items(games) { game ->
             PickCard(
@@ -68,4 +67,5 @@ fun PickCardList(
                 player = player)
         }
     }
+
 }

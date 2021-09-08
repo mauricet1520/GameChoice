@@ -3,10 +3,7 @@ package com.coolreece.gamechoice.ui.composable
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -34,12 +31,13 @@ fun SimpleOutlinedTextFieldSample(navController: NavController, player: Player) 
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(all = 16.dp)
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .padding(horizontal = 16.dp,
-                    vertical = 8.dp)
+                .padding(horizontal = 4.dp,
+                    vertical = 4.dp)
                 .fillMaxWidth(),
             singleLine = true,
             value = name,
@@ -54,8 +52,9 @@ fun SimpleOutlinedTextFieldSample(navController: NavController, player: Player) 
 
         OutlinedTextField(
             modifier = Modifier
-                .padding(horizontal = 16.dp,
-                    vertical = 8.dp)
+
+                .padding(horizontal = 4.dp,
+                    vertical = 4.dp)
                 .fillMaxWidth(),
                 value = email,
             onValueChange = {
@@ -69,35 +68,37 @@ fun SimpleOutlinedTextFieldSample(navController: NavController, player: Player) 
 
         OutlinedTextField(
             modifier = Modifier
-                .padding(horizontal = 16.dp,
-                    vertical = 8.dp)
+                .padding(horizontal = 4.dp,
+                    vertical = 4.dp)
                 .fillMaxWidth(),
             value = entryCode,
             onValueChange = { entryCode = it },
             label = { Text("Entry Code") },
-            visualTransformation = PasswordVisualTransformation(),
             textStyle = TextStyle(color = MaterialTheme.colors.primary),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-
-        Button(
-            modifier = Modifier
-                .padding(horizontal = 16.dp,
-                    vertical = 8.dp)
-                .fillMaxWidth(),
-            shape = MaterialTheme.shapes.large,
-            onClick = {
-                if(entryCode == "1234") {
-                    Log.i("ButtonLog", "Successful entry")
-                    navController.navigate("gameselectioncard")
+        Row(horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth()) {
+            Button(
+                modifier = Modifier
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    ),
+                shape = MaterialTheme.shapes.medium,
+                onClick = {
+                    if (entryCode == "1234") {
+                        Log.i("ButtonLog", "Successful entry")
+                        navController.navigate("gameselectioncard")
+                    }
+                }) {
+                if (entryCode.isEmpty()) {
+                    Text("NEXT")
+                } else if (entryCode != "1234") {
+                    Text("Wrong Entry")
+                } else {
+                    Text("Play")
                 }
-            }) {
-            if (entryCode.isEmpty()) {
-                Text("Play")
-            }else if (entryCode != "1234") {
-                Text("Wrong Entry")
-            }else {
-                Text("Play")
             }
         }
     }

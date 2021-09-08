@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -38,17 +39,17 @@ fun PlayerResultCard(player: Player) {
 
     // Add padding around our message
     Row(modifier = Modifier.padding(all = 8.dp)) {
-        Image(
-            painter = painterResource(R.drawable.profile_picture_test),
-            contentDescription = "Contact profile picture",
-            modifier = Modifier
-                // Set image size to 40 dp
-                .size(40.dp)
-                // Clip image to be shaped as a circle
-                .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colors.secondary, CircleShape)
-
-        )
+//        Image(
+//            painter = painterResource(R.drawable.profile_picture_test),
+//            contentDescription = "Contact profile picture",
+//            modifier = Modifier
+//                // Set image size to 40 dp
+//                .size(40.dp)
+//                // Clip image to be shaped as a circle
+//                .clip(CircleShape)
+//                .border(1.5.dp, MaterialTheme.colors.secondary, CircleShape)
+//
+//        )
 
         // Add a horizontal space between the image and the column
         Spacer(modifier = Modifier.width(8.dp))
@@ -138,7 +139,10 @@ fun PlayerResultList(playerViewModel: PlayerViewModel = viewModel(), navControll
                 }
             }
         }else {
-            CircularProgressIndicator()
+            Column(horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+                CircularProgressIndicator()
+            }
         }
     }
 }

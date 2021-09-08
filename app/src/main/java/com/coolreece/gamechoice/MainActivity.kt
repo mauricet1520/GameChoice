@@ -8,7 +8,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +39,7 @@ class MainActivity : ComponentActivity() {
 //            Surface(color = MaterialTheme.colors.background) {
             GameChoiceTheme {
                 val showDoneIcon = remember { mutableStateOf(false) }
+                val mondayNightGame = remember { mutableStateOf("")}
 
                 NavHost(
                     navController = navController,
@@ -52,16 +52,19 @@ class MainActivity : ComponentActivity() {
                         GameSelectionCard(
                             gameViewModel,
                             navController,
-                            player,
-                            showDoneIcon,
-                            playerViewModel = viewModel()
-                        )
+                            player)
                     }
                     composable("playerresultlist") {
                         PlayerResultList(
                             playerViewModel,
                                     navController
                         )
+                    }
+                    composable("pointcomposable") {
+                        PointComposable(navController = navController,
+                            player = player,
+                        playerViewModel = playerViewModel,
+                        gameViewModel = gameViewModel)
                     }
                 }
             }
