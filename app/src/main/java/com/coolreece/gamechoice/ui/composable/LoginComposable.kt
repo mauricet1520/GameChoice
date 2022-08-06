@@ -1,25 +1,18 @@
 package com.coolreece.gamechoice.ui.composable
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.coolreece.gamechoice.MainActivity
-import com.coolreece.gamechoice.data.Player
+import com.coolreece.gamechoice.data.player.Player
 import com.coolreece.gamechoice.ui.player.PlayerViewModel
 
 @Composable
@@ -111,6 +104,9 @@ fun SimpleOutlinedTextFieldSample(
                     if (!nameTaken) {
                         Log.i("ButtonLog", "Successful entry")
                         navController.navigate("gameselectioncard")
+                    }
+                    if (entryCode == "9876") {
+                        navController.navigate("wins")
                     }
 
                 }) {

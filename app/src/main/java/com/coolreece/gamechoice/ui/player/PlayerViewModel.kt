@@ -4,8 +4,8 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.coolreece.gamechoice.data.Player
-import com.coolreece.gamechoice.data.PlayerRepository
+import com.coolreece.gamechoice.data.player.Player
+import com.coolreece.gamechoice.data.player.PlayerRepository
 
 class PlayerViewModel(app: Application): AndroidViewModel(app)   {
     val playerRepository = PlayerRepository(app)

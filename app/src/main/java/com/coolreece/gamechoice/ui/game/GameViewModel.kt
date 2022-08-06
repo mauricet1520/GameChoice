@@ -4,8 +4,8 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.coolreece.gamechoice.data.Game
-import com.coolreece.gamechoice.data.GameRepository
+import com.coolreece.gamechoice.data.game.Game
+import com.coolreece.gamechoice.data.game.GameRepository
 
 
 class GameViewModel(app: Application): AndroidViewModel(app)  {

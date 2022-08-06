@@ -3,7 +3,6 @@ package com.coolreece.gamechoice.ui.composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -12,11 +11,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.coolreece.gamechoice.data.Game
-import com.coolreece.gamechoice.data.Player
+import com.coolreece.gamechoice.data.game.Game
+import com.coolreece.gamechoice.data.player.Player
 
 @ExperimentalMaterialApi
 @Composable

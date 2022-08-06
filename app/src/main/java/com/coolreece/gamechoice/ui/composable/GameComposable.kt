@@ -5,27 +5,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.coolreece.gamechoice.data.Game
-import com.coolreece.gamechoice.data.Player
+import com.coolreece.gamechoice.data.game.Game
+import com.coolreece.gamechoice.data.player.Player
 import com.coolreece.gamechoice.ui.game.GameViewModel
-import com.coolreece.gamechoice.ui.player.PlayerViewModel
 
 @ExperimentalMaterialApi
 @Composable
 fun GameSelectionCard(
     gameViewModel: GameViewModel = viewModel(),
     navController: NavController,
-    player: Player) {
+    player: Player
+) {
 
     val games = gameViewModel.gameData.observeAsState()
     games.value.let {
@@ -58,7 +55,8 @@ fun GameSelectionCard(
 @Composable
 fun PickCardList(
     games: List<Game>,
-    player: Player) {
+    player: Player
+) {
 
     LazyColumn() {
         items(games) { game ->
