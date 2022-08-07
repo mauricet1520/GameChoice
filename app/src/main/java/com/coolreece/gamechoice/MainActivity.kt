@@ -10,10 +10,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -77,12 +76,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            // A surface container using the 'background' color from the theme
-//            Surface(color = MaterialTheme.colors.background) {
             GameChoiceTheme {
-                val showDoneIcon = remember { mutableStateOf(false) }
-                val mondayNightGame = remember { mutableStateOf("")}
-
                 NavHost(
                     navController = navController,
                     startDestination = "playerresultlist"
@@ -138,16 +132,15 @@ class MainActivity : ComponentActivity() {
        val workManager =  WorkManager.getInstance(applicationContext)
         workManager.enqueue(workRequest)
         workManager.getWorkInfoByIdLiveData(workRequest.id)
-            .observe(this, Observer {
+            .observe(this) {
                 when (it.state) {
                     WorkInfo.State.SUCCEEDED -> {
-//                        val result = it.outputData.getString(DATA_KEY) ?: "null"
                         Log.i("Worker", "SUCCEEDED")
                         Toast.makeText(applicationContext, "WorkFinished", Toast.LENGTH_LONG).show()
                     }
                     WorkInfo.State.RUNNING -> {
                         val progress = it.progress.getString(MESSAGE_KEY)
-                        if(progress != null) {
+                        if (progress != null) {
                             Log.i("Worker", progress)
                         }
                     }
@@ -158,7 +151,7 @@ class MainActivity : ComponentActivity() {
                         Log.i("Worker", it.state.name)
                     }
                 }
-            })
+            }
     }
 
 }

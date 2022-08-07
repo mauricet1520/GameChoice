@@ -134,7 +134,7 @@ class PlayerRepository(val app: Application) {
         return networkInfo?.isConnectedOrConnecting ?: false
     }
 
-    private fun buildRetrofit(gson: Gson?): Retrofit {
+    private fun buildRetrofit(gson: Gson): Retrofit {
 
         val client = OkHttpClient.Builder()
             .connectTimeout(100, TimeUnit.SECONDS)
