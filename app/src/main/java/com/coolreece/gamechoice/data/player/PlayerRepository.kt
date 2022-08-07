@@ -10,9 +10,11 @@ import com.coolreece.gamechoice.BASE_URL
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 class PlayerRepository(val app: Application) {
@@ -21,31 +23,33 @@ class PlayerRepository(val app: Application) {
     val onePlayerData = MutableLiveData<Player>()
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            val d = async { callService() }
-            withTimeoutOrNull(200000L) {
-                d.await()
-            }
-            Log.i("Service", "Calling getPlayers in Repository")
-        }
+        getPlayers()
     }
 
     fun getPlayers() {
         CoroutineScope(Dispatchers.IO).launch {
-            val d = async { callService() }
-            withTimeoutOrNull(200000L) {
-                d.await()
+            try {
+                withTimeoutOrNull(200000L) {
+                    callService()
+                    Log.i("Service", "Calling getPlayers in Repository")
+                }
+            }catch (e: Throwable) {
+                Log.e("Service", "Error", e)
             }
-            Log.i("Service", "Calling getPlayers in Repository")
+
         }
     }
 
     fun getPlayer(name: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            withTimeoutOrNull(200000L) {
-                callGetPlayerService(name)
+            try {
+                withTimeoutOrNull(200000L) {
+                    callGetPlayerService(name)
+                }
+            }catch (e: Throwable) {
+
             }
-            Log.i("Service", "Calling getPlayer with name $name in Repository")
+
         }
     }
 
@@ -73,7 +77,6 @@ class PlayerRepository(val app: Application) {
 
             Log.i("Service", "Calling Service ${players.isSuccessful} Body: ${players.body()}")
             Log.i("Service", "Code ${players.code()}")
-            Log.i("Service", "Error $players")
             playerData.postValue(players.body() ?: emptyList())
         }else {
             Log.i("Service", "Error No Network")
@@ -132,7 +135,12 @@ class PlayerRepository(val app: Application) {
     }
 
     private fun buildRetrofit(gson: Gson?): Retrofit {
+
+        val client = OkHttpClient.Builder()
+            .connectTimeout(100, TimeUnit.SECONDS)
+            .readTimeout(100, TimeUnit.SECONDS).build()
         return Retrofit.Builder()
+            .client(client)
             .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create()) //important
             .addConverterFactory(GsonConverterFactory.create(gson))

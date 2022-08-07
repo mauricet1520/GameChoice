@@ -70,6 +70,8 @@ class MainActivity : ComponentActivity() {
         player = Player()
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
         playerViewModel = ViewModelProvider(this).get(PlayerViewModel::class.java)
+
+
         Log.i("Service", "Calling getGames")
 //        gameViewModel.getGames()
         setContent {
@@ -115,6 +117,7 @@ class MainActivity : ComponentActivity() {
             }
 //            }
         }
+//        runCode()
 
     }
 
@@ -129,15 +132,17 @@ class MainActivity : ComponentActivity() {
 
         val workRequest = OneTimeWorkRequestBuilder<GameWorker>()
             .setConstraints(constraints)
+
             .build()
+
        val workManager =  WorkManager.getInstance(applicationContext)
         workManager.enqueue(workRequest)
         workManager.getWorkInfoByIdLiveData(workRequest.id)
             .observe(this, Observer {
                 when (it.state) {
                     WorkInfo.State.SUCCEEDED -> {
-                        val result = it.outputData.getString(DATA_KEY) ?: "null"
-                        Log.i("Worker", result)
+//                        val result = it.outputData.getString(DATA_KEY) ?: "null"
+                        Log.i("Worker", "SUCCEEDED")
                         Toast.makeText(applicationContext, "WorkFinished", Toast.LENGTH_LONG).show()
                     }
                     WorkInfo.State.RUNNING -> {
@@ -145,6 +150,9 @@ class MainActivity : ComponentActivity() {
                         if(progress != null) {
                             Log.i("Worker", progress)
                         }
+                    }
+                    WorkInfo.State.FAILED -> {
+                        Log.i("Worker", "FAILED")
                     }
                     else -> {
                         Log.i("Worker", it.state.name)
