@@ -72,7 +72,7 @@ class PlayerRepository(val app: Application) {
             val retrofit = buildRetrofit(gson)
 
             val service = retrofit.create(PlayerService::class.java)
-            val players = service.getPlayers("week 1")
+            val players = service.getPlayers("The Unit")
 
 
             Log.i("Service", "Calling Service ${players.isSuccessful} Body: ${players.body()}")

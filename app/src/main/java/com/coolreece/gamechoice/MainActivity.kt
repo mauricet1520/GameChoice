@@ -69,17 +69,14 @@ class MainActivity : ComponentActivity() {
         player = Player()
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
         playerViewModel = ViewModelProvider(this).get(PlayerViewModel::class.java)
-
-
         Log.i("Service", "Calling getGames")
-//        gameViewModel.getGames()
         setContent {
             val navController = rememberNavController()
 
             GameChoiceTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = "playerresultlist"
+                    startDestination = "simpleoutlinedtextfieldsample"
                 ) {
                     composable("simpleoutlinedtextfieldsample") {
                         SimpleOutlinedTextFieldSample(navController, player, playerViewModel)

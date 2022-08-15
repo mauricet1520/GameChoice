@@ -41,7 +41,7 @@ fun PointComposable(
 
                 IconButton(onClick = {
                     if (player.teams.size > 10 && player.points != 0) {
-                        player.week = "week 1"
+                        player.week = 1
                         playerViewModel.addPlayer(player)
                         navController.navigate("playerresultlist")
                     }
