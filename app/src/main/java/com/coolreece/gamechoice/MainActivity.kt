@@ -18,16 +18,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.work.*
-import com.coolreece.gamechoice.data.game.GameWorker
+//import com.coolreece.gamechoice.data.game.GameWorker
 import com.coolreece.gamechoice.data.player.Player
+import com.coolreece.gamechoice.ui.auth.AuthViewModel
 import com.coolreece.gamechoice.ui.composable.*
 import com.coolreece.gamechoice.ui.game.GameViewModel
 import com.coolreece.gamechoice.ui.player.PlayerViewModel
+import com.coolreece.gamechoice.ui.pool.PoolViewModel
 import com.coolreece.gamechoice.ui.theme.GameChoiceTheme
+import javax.sql.PooledConnection
 
 class MainActivity : ComponentActivity() {
     private lateinit var gameViewModel: GameViewModel
     private lateinit var playerViewModel: PlayerViewModel
+    private lateinit var authViewModel: AuthViewModel
+    private lateinit var poolViewModel: PoolViewModel
     private lateinit var player: Player
     private lateinit var gameChoiceService: GameChoiceService
 
@@ -69,6 +74,9 @@ class MainActivity : ComponentActivity() {
         player = Player()
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
         playerViewModel = ViewModelProvider(this).get(PlayerViewModel::class.java)
+        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
+        poolViewModel = ViewModelProvider(this).get(PoolViewModel::class.java)
+
         Log.i("Service", "Calling getGames")
         setContent {
             val navController = rememberNavController()
@@ -76,10 +84,10 @@ class MainActivity : ComponentActivity() {
             GameChoiceTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = "simpleoutlinedtextfieldsample"
+                    startDestination = "poolcompose"
                 ) {
                     composable("simpleoutlinedtextfieldsample") {
-                        SimpleOutlinedTextFieldSample(navController, player, playerViewModel)
+                        SimpleOutlinedTextFieldSample(navController, player, authViewModel, playerViewModel)
                     }
                     composable("gameselectioncard") {
                         GameSelectionCard(
@@ -104,6 +112,11 @@ class MainActivity : ComponentActivity() {
                     composable("wins") {
                         Wins(navController = navController)
                     }
+
+                    composable("poolcompose") {
+                        PoolCompose(navController = navController,
+                            poolViewModel = poolViewModel, playerViewModel = playerViewModel )
+                    }
                 }
             }
 //            }
@@ -116,40 +129,40 @@ class MainActivity : ComponentActivity() {
         gameChoiceService.doSomething()
     }
 
-    private fun runCode() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val workRequest = OneTimeWorkRequestBuilder<GameWorker>()
-            .setConstraints(constraints)
-
-            .build()
-
-       val workManager =  WorkManager.getInstance(applicationContext)
-        workManager.enqueue(workRequest)
-        workManager.getWorkInfoByIdLiveData(workRequest.id)
-            .observe(this) {
-                when (it.state) {
-                    WorkInfo.State.SUCCEEDED -> {
-                        Log.i("Worker", "SUCCEEDED")
-                        Toast.makeText(applicationContext, "WorkFinished", Toast.LENGTH_LONG).show()
-                    }
-                    WorkInfo.State.RUNNING -> {
-                        val progress = it.progress.getString(MESSAGE_KEY)
-                        if (progress != null) {
-                            Log.i("Worker", progress)
-                        }
-                    }
-                    WorkInfo.State.FAILED -> {
-                        Log.i("Worker", "FAILED")
-                    }
-                    else -> {
-                        Log.i("Worker", it.state.name)
-                    }
-                }
-            }
-    }
+//    private fun runCode() {
+//        val constraints = Constraints.Builder()
+//            .setRequiredNetworkType(NetworkType.CONNECTED)
+//            .build()
+//
+////        val workRequest = OneTimeWorkRequestBuilder<GameWorker>()
+////            .setConstraints(constraints)
+////
+////            .build()
+//
+//       val workManager =  WorkManager.getInstance(applicationContext)
+//        workManager.enqueue(workRequest)
+//        workManager.getWorkInfoByIdLiveData(workRequest.id)
+//            .observe(this) {
+//                when (it.state) {
+//                    WorkInfo.State.SUCCEEDED -> {
+//                        Log.i("Worker", "SUCCEEDED")
+//                        Toast.makeText(applicationContext, "WorkFinished", Toast.LENGTH_LONG).show()
+//                    }
+//                    WorkInfo.State.RUNNING -> {
+//                        val progress = it.progress.getString(MESSAGE_KEY)
+//                        if (progress != null) {
+//                            Log.i("Worker", progress)
+//                        }
+//                    }
+//                    WorkInfo.State.FAILED -> {
+//                        Log.i("Worker", "FAILED")
+//                    }
+//                    else -> {
+//                        Log.i("Worker", it.state.name)
+//                    }
+//                }
+//            }
+//    }
 
 }
 

@@ -13,32 +13,32 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-class GameWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-    val application: Application = context.applicationContext as Application
-    val playerViewModel: PlayerViewModel = PlayerViewModel(application)
+//class GameWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+//    val application: Application = context.applicationContext as Application
+//    val playerViewModel: PlayerViewModel = PlayerViewModel(application)
+//
+//    val playerRepository = PlayerRepository(application)
+//    override suspend fun doWork(): Result {
+//
+//        withContext(Dispatchers.IO) {
+//            try {
+//                playerViewModel.getPlayers()
+//                setProgress(workDataOf(MESSAGE_KEY to "Doing work!"))
+//                delay(1000)
+//                setProgress(workDataOf(MESSAGE_KEY to "Doing more work!"))
+//                delay(1000)
+//                setProgress(workDataOf(MESSAGE_KEY to "Almost!"))
+//                delay(1000)
+//                Log.i("Worker", "Worker working")
+//                return@withContext Result.success()
+//            } catch (error: Throwable) {
+//                Log.i("Worker", "Worker failed", error)
+//
+//                Result.failure()
+//            }
+//        }
+//        return Result.success()
+//    }
 
-    val playerRepository = PlayerRepository(application)
-    override suspend fun doWork(): Result {
 
-        withContext(Dispatchers.IO) {
-            try {
-                playerViewModel.getPlayers()
-                setProgress(workDataOf(MESSAGE_KEY to "Doing work!"))
-                delay(1000)
-                setProgress(workDataOf(MESSAGE_KEY to "Doing more work!"))
-                delay(1000)
-                setProgress(workDataOf(MESSAGE_KEY to "Almost!"))
-                delay(1000)
-                Log.i("Worker", "Worker working")
-                return@withContext Result.success()
-            } catch (error: Throwable) {
-                Log.i("Worker", "Worker failed", error)
-
-                Result.failure()
-            }
-        }
-        return Result.success()
-    }
-
-
-}
+//}

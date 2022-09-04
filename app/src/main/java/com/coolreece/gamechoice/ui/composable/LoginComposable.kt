@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,7 +13,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.coolreece.gamechoice.data.auth.AuthUser
 import com.coolreece.gamechoice.data.player.Player
+import com.coolreece.gamechoice.ui.auth.AuthViewModel
 import com.coolreece.gamechoice.ui.player.PlayerViewModel
 
 @Composable
@@ -20,14 +23,19 @@ import com.coolreece.gamechoice.ui.player.PlayerViewModel
 fun SimpleOutlinedTextFieldSample(
     navController: NavController,
     player: Player,
+    authViewModel: AuthViewModel,
     playerViewModel: PlayerViewModel
 ) {
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    authViewModel.emailData.observeAsState()
+
     var entryCode by rememberSaveable { mutableStateOf("") }
 
-    var nameTaken by rememberSaveable{ mutableStateOf(false)}
+    var nameTaken by rememberSaveable { mutableStateOf(false) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -55,6 +63,23 @@ fun SimpleOutlinedTextFieldSample(
 
         OutlinedTextField(
             modifier = Modifier
+                .padding(
+                    horizontal = 4.dp,
+                    vertical = 4.dp
+                )
+                .fillMaxWidth(),
+            singleLine = true,
+            value = password,
+            onValueChange = {
+                password = it
+            },
+            label = { Text("Password") },
+            textStyle = TextStyle(color = MaterialTheme.colors.primary),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        )
+
+        OutlinedTextField(
+            modifier = Modifier
 
                 .padding(
                     horizontal = 4.dp,
@@ -71,23 +96,24 @@ fun SimpleOutlinedTextFieldSample(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(
-                    horizontal = 4.dp,
-                    vertical = 4.dp
-                )
-                .fillMaxWidth(),
-            value = entryCode,
-            onValueChange = { entryCode = it },
-            label = { Text("Entry Code") },
-            textStyle = TextStyle(color = MaterialTheme.colors.primary),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
+//        OutlinedTextField(
+//            modifier = Modifier
+//                .padding(
+//                    horizontal = 4.dp,
+//                    vertical = 4.dp
+//                )
+//                .fillMaxWidth(),
+//            value = entryCode,
+//            onValueChange = { entryCode = it },
+//            label = { Text("Entry Code") },
+//            textStyle = TextStyle(color = MaterialTheme.colors.primary),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+//        )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Button(
                 modifier = Modifier
                     .padding(
@@ -96,26 +122,40 @@ fun SimpleOutlinedTextFieldSample(
                     ),
                 shape = MaterialTheme.shapes.medium,
                 onClick = {
-                    playerViewModel.playerData.value?.forEach {
-                        if (player.name == it.name) {
-                            nameTaken = true
-                        }
-                    }
-                    if (!nameTaken) {
-                        Log.i("ButtonLog", "Successful entry")
+                    authViewModel.signIn(
+                        AuthUser(
+                            email = email,
+                            password = password,
+                            true
+                        )
+                    )
+                    authViewModel.emailData.value.let {
                         navController.navigate("gameselectioncard")
+
+
                     }
-                    if (entryCode == "9876") {
-                        navController.navigate("wins")
-                    }
+//                    playerViewModel.playerData.value?.forEach {
+//                        if (player.name == it.name) {
+//                            nameTaken = true
+//                        }
+//                    }
+//                    if (!nameTaken) {
+//                        Log.i("ButtonLog", "Successful entry")
+//                        navController.navigate("gameselectioncard")
+//                    }
+//                    if (entryCode == "9876") {
+//                        navController.navigate("wins")
+//                    }
 
                 }) {
-                when {
-                    entryCode.isEmpty() -> Text("NEXT")
-                    entryCode != "1234" -> Text("Wrong Entry")
-                    nameTaken -> Text("Name Already Taken")
-                    else -> Text("Play")
-                }
+
+                Text("Sign In")
+//                when {
+//                    entryCode.isEmpty() -> Text("NEXT")
+//                    entryCode != "1234" -> Text("Wrong Entry")
+//                    nameTaken -> Text("Name Already Taken")
+//                    else -> Text("Play")
+//                }
             }
         }
     }

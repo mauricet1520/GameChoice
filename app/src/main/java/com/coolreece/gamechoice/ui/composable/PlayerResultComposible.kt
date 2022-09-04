@@ -105,20 +105,20 @@ fun PlayerResultCard(player: Player, game: Game?) {
 
 @Composable
 fun PlayerResultList(
-    playerViewModel: PlayerViewModel = viewModel(),
+    playerViewModel: PlayerViewModel,
     navController: NavController,
-    gameViewModel: GameViewModel = viewModel()
+    gameViewModel: GameViewModel
 ) {
 //    playerViewModel.getPlayers()
+//    gameViewModel.getGames()
 
     val players = playerViewModel.playerData.observeAsState()
     val games = gameViewModel.gameData.observeAsState()
 
-    val mondayNightGame = games.value?.filter { it.mondayNight == true }
 
     Column {
         TopAppBar(
-            title = { Text("${players.value?.size} Players") },
+            title = { Text("${players?.value?.size} Players") },
             actions = {
 
                 IconButton(onClick = {
@@ -141,7 +141,10 @@ fun PlayerResultList(
             }
         )
 
-        if(players.value!!.isNotEmpty()) {
+        if(players.value != null && games.value != null  && games.value!!.isNotEmpty()) {
+
+            val mondayNightGame = games.value?.filter { it.mondayNight == true }
+
             LazyColumn {
                 items(players.value!!) { player ->
                     PlayerResultCard(player, mondayNightGame?.get(0))

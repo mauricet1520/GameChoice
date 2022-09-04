@@ -14,9 +14,9 @@ class PlayerViewModel(app: Application): AndroidViewModel(app)   {
      val onePlayerData: LiveData<Player> = playerRepository.onePlayerData
 
 
-    fun getPlayers() {
+    fun getPlayers(poolName: String) {
         Log.i("Service", "Calling getPlayers in ViewModel")
-        playerRepository.getPlayers()
+        playerRepository.getPlayers(poolName)
     }
 
     fun addPlayer(player: Player) {

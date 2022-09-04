@@ -1,4 +1,4 @@
-package com.coolreece.gamechoice.data.game
+package com.coolreece.gamechoice.data.pool
 
 import android.app.Application
 import android.content.Context
@@ -15,39 +15,29 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
-class GameRepository(val app: Application) {
+class PoolRepository(val app: Application) {
 
-     val gameData = MutableLiveData(listOf<Game>())
-    private val gameDao = GameDatabase.getDatabase(app).gameDao()
+     val poolData = MutableLiveData(listOf<Pool>())
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
             withTimeout(130000L) {
-                val data = gameDao.getAll()
-                if (data.isEmpty()) {
-                    callService()
-                } else {
-                    gameData.postValue(data)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(app, "Using local data", Toast.LENGTH_LONG).show()
-                    }
-                }
+                callServiceAllLeagues()
             }
-            Log.i("GameRepo", "Calling getGames in Repository")
         }
     }
 
-    fun getGames() {
+    fun getPoolData() {
         CoroutineScope(Dispatchers.IO).launch {
             withTimeout(130000L) {
-                callService()
+                callServiceAllLeagues()
             }
-            Log.i("Game Repo", "Calling getGames in Repository")
+            Log.i("PoolRepo", "Calling getPoolData in Repository")
         }
     }
 
     @WorkerThread
-    suspend fun callService() {
+    suspend fun callServiceAllLeagues() {
         if (networkAvailable()) {
 
             withContext(Dispatchers.Main) {
@@ -59,22 +49,17 @@ class GameRepository(val app: Application) {
 
             val retrofit = buildRetrofit(gson)
 
-            val service = retrofit.create(GameService::class.java)
-            val gameList = service.getGames("week 1")
-            Log.i("GameRepo", "Calling Service ${gameList.isSuccessful} Body: ${gameList.body()}")
-            Log.i("GameRepo", "Code ${gameList.code()}")
-            Log.i("GameRepo", "Error $gameList")
-            val games = gameList.body() ?: emptyList()
-            gameData.postValue(games)
-            gameDao.deleteAll()
-            gameDao.insertGames(games)
+            val service = retrofit.create(PoolService::class.java)
+            val leagueList = service.allLeagues()
+            Log.i("GameRepo", "Calling Service ${leagueList.isSuccessful} Body: ${leagueList.body()}")
+            Log.i("GameRepo", "Code ${leagueList.code()}")
+            Log.i("GameRepo", "Error $leagueList")
+            val games = leagueList.body() ?: emptyList()
+            poolData.postValue(games)
         }else {
             Log.i("GameRepo", "Error No Network")
         }
-
     }
-
-
 
     @Suppress("DEPRECATION")
     fun networkAvailable(): Boolean {

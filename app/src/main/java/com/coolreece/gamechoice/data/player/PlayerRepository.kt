@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.coolreece.gamechoice.BASE_URL
+import com.coolreece.gamechoice.util.GameUtil.Companion.buildRetrofit
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
@@ -22,19 +23,16 @@ class PlayerRepository(val app: Application) {
     val playerData = MutableLiveData(listOf<Player>())
     val onePlayerData = MutableLiveData<Player>()
 
-    init {
-        getPlayers()
-    }
 
-    fun getPlayers() {
+    fun getPlayers(poolName: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 withTimeoutOrNull(200000L) {
-                    callService()
-                    Log.i("Service", "Calling getPlayers in Repository")
+                    callService(poolName)
+                    Log.i("Player Repo", "Calling getPlayers in Repository")
                 }
             }catch (e: Throwable) {
-                Log.e("Service", "Error", e)
+                Log.e("Player Repo", "Error", e)
             }
 
         }
@@ -58,12 +56,12 @@ class PlayerRepository(val app: Application) {
             withTimeoutOrNull(200000L) {
                 callPlayerService(player)
             }
-            Log.i("Service", "Calling addPlayer in Repository")
+            Log.i("Player Repo", "Calling addPlayer in Repository")
         }
     }
 
     @WorkerThread
-    suspend fun callService() {
+    suspend fun callService(poolName: String) {
         if (networkAvailable()) {
             val gson = GsonBuilder()
                 .setLenient()
@@ -72,14 +70,14 @@ class PlayerRepository(val app: Application) {
             val retrofit = buildRetrofit(gson)
 
             val service = retrofit.create(PlayerService::class.java)
-            val players = service.getPlayers("The Unit")
+            val players = service.getPlayers(poolName)
 
 
-            Log.i("Service", "Calling Service ${players.isSuccessful} Body: ${players.body()}")
-            Log.i("Service", "Code ${players.code()}")
+            Log.i("Player Repo", "Calling Service ${players.isSuccessful} Body: ${players.body()}")
+            Log.i("Player Repo", "Code ${players.code()}")
             playerData.postValue(players.body() ?: emptyList())
         }else {
-            Log.i("Service", "Error No Network")
+            Log.i("Player Repo", "Error No Network")
         }
 
     }
@@ -96,11 +94,11 @@ class PlayerRepository(val app: Application) {
             val service = retrofit.create(PlayerService::class.java)
             val playerServiceResponse = service.getPlayer("week 1", name)
             onePlayerData.postValue(playerServiceResponse.body())
-            Log.i("Service", "Calling Service ${playerServiceResponse.isSuccessful} " +
+            Log.i("Player Repo", "Calling Service ${playerServiceResponse.isSuccessful} " +
                     "Body: ${playerServiceResponse.body()}")
-            Log.i("Service", "Code ${playerServiceResponse.code()}")
+            Log.i("Player Repo", "Code ${playerServiceResponse.code()}")
         }else {
-            Log.i("Service", "Error No Network")
+            Log.i("Player Repo", "Error No Network")
         }
 
     }
@@ -115,13 +113,20 @@ class PlayerRepository(val app: Application) {
             val retrofit = buildRetrofit(gson)
 
             val service = retrofit.create(PlayerService::class.java)
+
+            player.poolName = "The Unit"
+
+            Log.i("Player Repo", player.toString())
+
+
+
             val players = service.addPlayer(player)
 
-            Log.i("Service", "Calling Service ${players.isSuccessful} Body: ${players.body()}")
-            Log.i("Service", "Code ${players.code()}")
-            Log.i("Service", "Players: $players")
+            Log.i("Player Repo", "Calling Service ${players.isSuccessful} Body: ${players.body()}")
+            Log.i("Player Repo", "Code ${players.code()}")
+            Log.i("Player Repo", "Players: $players")
         }else {
-            Log.i("Service", "Error No Network")
+            Log.i("Player Repo", "Error No Network")
         }
 
     }
@@ -134,17 +139,5 @@ class PlayerRepository(val app: Application) {
         return networkInfo?.isConnectedOrConnecting ?: false
     }
 
-    private fun buildRetrofit(gson: Gson): Retrofit {
 
-        val client = OkHttpClient.Builder()
-            .connectTimeout(100, TimeUnit.SECONDS)
-            .readTimeout(100, TimeUnit.SECONDS).build()
-        return Retrofit.Builder()
-            .client(client)
-            .baseUrl(BASE_URL)
-            .addConverterFactory(ScalarsConverterFactory.create()) //important
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-
-    }
 }

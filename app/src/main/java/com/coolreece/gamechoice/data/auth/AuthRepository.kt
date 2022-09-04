@@ -1,4 +1,4 @@
-package com.coolreece.gamechoice.data.game
+package com.coolreece.gamechoice.data.auth
 
 import android.app.Application
 import android.content.Context
@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.coolreece.gamechoice.BASE_URL
+import com.coolreece.gamechoice.data.game.Game
+import com.coolreece.gamechoice.data.game.GameService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
@@ -15,39 +17,22 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
-class GameRepository(val app: Application) {
+class AuthRepository(val app: Application) {
 
-     val gameData = MutableLiveData(listOf<Game>())
-    private val gameDao = GameDatabase.getDatabase(app).gameDao()
+    val emailData = MutableLiveData<String>()
 
-    init {
+    fun signIn(authUser: AuthUser) {
         CoroutineScope(Dispatchers.IO).launch {
             withTimeout(130000L) {
-                val data = gameDao.getAll()
-                if (data.isEmpty()) {
-                    callService()
-                } else {
-                    gameData.postValue(data)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(app, "Using local data", Toast.LENGTH_LONG).show()
-                    }
-                }
+                callService(authUser)
             }
-            Log.i("GameRepo", "Calling getGames in Repository")
+            Log.i("Service", "Calling getGames in Repository")
         }
     }
 
-    fun getGames() {
-        CoroutineScope(Dispatchers.IO).launch {
-            withTimeout(130000L) {
-                callService()
-            }
-            Log.i("Game Repo", "Calling getGames in Repository")
-        }
-    }
 
     @WorkerThread
-    suspend fun callService() {
+    suspend fun callService(authUser: AuthUser) {
         if (networkAvailable()) {
 
             withContext(Dispatchers.Main) {
@@ -59,21 +44,18 @@ class GameRepository(val app: Application) {
 
             val retrofit = buildRetrofit(gson)
 
-            val service = retrofit.create(GameService::class.java)
-            val gameList = service.getGames("week 1")
-            Log.i("GameRepo", "Calling Service ${gameList.isSuccessful} Body: ${gameList.body()}")
-            Log.i("GameRepo", "Code ${gameList.code()}")
-            Log.i("GameRepo", "Error $gameList")
-            val games = gameList.body() ?: emptyList()
-            gameData.postValue(games)
-            gameDao.deleteAll()
-            gameDao.insertGames(games)
+            val service = retrofit.create(AuthService::class.java)
+            val response = service.authNewUser(authUser)
+            Log.i("Service", "Calling Service ${response.isSuccessful} Body: ${response.body()}")
+
+
+            val email = response.body()?.email ?: ""
+            emailData.postValue(email)
         }else {
-            Log.i("GameRepo", "Error No Network")
+            Log.i("Service", "Error No Network")
         }
 
     }
-
 
 
     @Suppress("DEPRECATION")
